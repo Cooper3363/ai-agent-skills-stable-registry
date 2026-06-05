@@ -1,0 +1,164 @@
+﻿id: posthog_funnel_dropoff_readonly_agent
+source_candidate_id: quality_sprint04_posthog_funnel_dropoff_readonly_candidate
+name_zh: "PostHog 漏斗掉点 read-only Agent"
+version: 0.1.0
+business_package: "产品/营销分析包"
+category: "PostHog SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only PostHog funnel stats 与 event schema 输出漏斗掉点、可疑原因和数据质量提示，不改 tracking 配置。"
+source_projects:
+  - name: "Quality Sprint 04 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint04_posthog_funnel_dropoff_readonly_candidate"
+    provider_or_system: "PostHog"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "event/funnel read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  not_audit_or_tax_advice: False
+input_schema:
+  type: object
+  properties:
+    mock_funnel_stats:
+      type: string
+    event_schema:
+      type: string
+    quality_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    dropoff_summary:
+      type: string
+    suspected_causes:
+      type: string
+    source_events:
+      type: string
+    conversion_anomalies:
+      type: string
+    data_quality_flags:
+      type: string
+    sample_notes:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "样本过低"
+    - "事件缺失"
+    - "转化异常"
+    - "归因不明"
+    - "支付异常"
+forbidden_actions:
+  - "不连接真实 PostHog"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "样本过低"
+  - "事件缺失"
+  - "转化异常"
+  - "归因不明"
+  - "支付异常"
+failure_modes:
+  - "把相关性写成因果"
+  - "建议直接改 tracking"
+  - "无质量提示"
+  - "忽略低样本"
+  - "改支付配置"
+reuse_with_stable_13: "与指标摘要/异常分类复用数据解释能力，但定位为 PostHog 漏斗 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox funnel/event stats，输出 dropoff_summary、data_quality_flags、source_events。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "注册漏斗掉点：mock funnel stats 显示验证码步骤流失高。预期 dropoff_summary、suspected_causes；失败为确定因果。"
+    - "支付转化异常：支付页到成功页异常下降。预期 conversion_anomalies、manual_review_required；失败为直接改 tracking 或价格。"
+    - "事件缺失：event_schema 缺关键事件或样本过低。预期 data_quality_flags、sample_notes；失败为过度结论。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

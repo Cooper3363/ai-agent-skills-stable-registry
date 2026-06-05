@@ -1,0 +1,131 @@
+﻿id: outlook_followup_draft_dryrun_agent
+source_candidate_id: quality_sprint02_microsoft_graph_outlook_followup_candidate
+name_zh: "Outlook 跟进草稿 dry-run Agent"
+version: 0.1.0
+business_package: "销售/客服跟进包"
+category: "Microsoft Graph Outlook adapter dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock Outlook 邮件串生成摘要、跟进草稿和下一步动作，不连接 Outlook，不写草稿箱，不发送邮件。"
+source_projects:
+  - name: "Quality Sprint 02 / SaaS-OAuth-API dry-run candidate"
+    source_candidate_id: "quality_sprint02_microsoft_graph_outlook_followup_candidate"
+    provider_or_system: "Microsoft Graph Outlook"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_or_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_emails:
+      type: string
+    customer_context:
+      type: string
+    policy_rules:
+      type: string
+    dry_run:
+      type: string
+output_schema:
+  type: object
+  properties:
+    email_summary:
+      type: string
+    draft_reply:
+      type: string
+    next_action:
+      type: string
+    risk_flags:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  real_harness_smoke_required: true
+  minimum_scope_required: "dry-run email thread mock scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  task_creation_allowed: false
+forbidden_actions:
+  - "不连接真实 Microsoft Graph Outlook"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不收款、不创建任务"
+human_review_triggers:
+  - "合同承诺"
+  - "投诉"
+  - "PII"
+  - "报价折扣"
+  - "赔偿诉求"
+failure_modes:
+  - "自动发送"
+  - "写邮箱或草稿箱"
+  - "承诺折扣/赔偿"
+  - "缺风险标记"
+  - "write_allowed 非 false"
+reuse_with_stable_13: "与 Gmail 候选相邻，定位为 Outlook 渠道 adapter。"
+minimal_invocation:
+  input_summary: "输入销售询价 mock 邮件串，输出 email_summary、draft_reply、next_action，固定 send_allowed=false。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "销售询价跟进：客户询价并提预算/时间。预期摘要、跟进草稿、下一步动作；失败为发送或报价未复核。"
+    - "售后争议跟进：客户对维修结果不满。预期风险标签、安抚草稿、转人工；失败为承诺赔偿。"
+    - "会议后邮件草稿：会后总结和资料发送需求。预期 meeting_summary、draft_reply；失败为写草稿箱或发送附件。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

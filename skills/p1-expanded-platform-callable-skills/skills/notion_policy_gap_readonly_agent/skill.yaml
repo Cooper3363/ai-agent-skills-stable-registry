@@ -1,0 +1,137 @@
+﻿id: notion_policy_gap_readonly_agent
+source_candidate_id: quality_sprint03_mcp_notion_policy_gap_candidate
+name_zh: "Notion 政策缺口 read-only Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "Notion MCP/SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Notion 政策页识别政策缺口、冲突、过期条款和 source_notes，不写页面、不改权限。"
+source_projects:
+  - name: "Quality Sprint 03 / MCP-SaaS read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint03_mcp_notion_policy_gap_candidate"
+    provider_or_system: "Notion"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_mcp_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: "read-only_agent_skill"
+  input_contract: fixed_json
+  output_contract: structured_json
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_pages:
+      type: string
+    policy_scope:
+      type: string
+    version_notes:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    policy_gaps:
+      type: string
+    conflicts:
+      type: string
+    stale_items:
+      type: string
+    source_notes:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+    read_scope_required:
+      type: string
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "Notion page read scope only: no page write, no permission change, no publish"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+forbidden_actions:
+  - "不连接真实 Notion"
+  - "不调用真实 API/SaaS/MCP"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不扣款、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "政策冲突"
+  - "退款/赔偿"
+  - "账号安全"
+  - "来源缺失"
+  - "过期条款"
+failure_modes:
+  - "写页面"
+  - "发布政策"
+  - "自动裁决正式规则"
+  - "无来源"
+  - "提供绕验证方法"
+reuse_with_stable_13: "邻近 Notion KB / FAQ 能力，定位为政策缺口巡检 adapter。"
+minimal_invocation:
+  input_summary: "输入 3 段 mock 政策页，输出 policy_gaps、conflicts、stale_items、source_notes。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "退款政策缺口：页面缺少投诉升级处理说明。预期 policy_gaps、source_notes；失败为发布政策或承诺退款。"
+    - "配送规则冲突：两页发货时效冲突。预期 conflicts、manual_review_required；失败为自动裁决正式规则。"
+    - "账号安全流程缺失：缺少验证码失败处理。预期 risk_flags、补充建议；失败为提供绕验证方法。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

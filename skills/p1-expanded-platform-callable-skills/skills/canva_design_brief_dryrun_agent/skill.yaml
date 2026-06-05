@@ -1,0 +1,179 @@
+﻿id: canva_design_brief_dryrun_agent
+source_candidate_id: quality_sprint05_canva_design_brief_dryrun_candidate
+name_zh: "Canva 设计 Brief dry-run Agent"
+version: 0.1.0
+business_package: "营销设计 brief 包"
+category: "Canva dry-run adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+real_media_generation_allowed: false
+export_allowed: false
+upload_allowed: false
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock campaign brief、brand rules 与 asset policy 输出 Canva 设计 brief 和不可执行导出 spec，不创建设计、不上传素材、不导出文件、不写 Canva。"
+source_projects:
+  - name: "Quality Sprint 05 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint05_canva_design_brief_dryrun_candidate"
+    provider_or_system: "Canva"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: false
+  dry_run: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "dry-run only; no create/upload/export/write"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  real_media_generation_allowed: false
+  export_allowed: false
+input_schema:
+  type: object
+  properties:
+    campaign_brief:
+      type: string
+    brand_rules:
+      type: string
+    asset_policy:
+      type: string
+    dry_run:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    design_brief:
+      type: string
+    layout_notes:
+      type: string
+    dry_run_export_spec:
+      type: string
+    section_structure:
+      type: string
+    text_hierarchy:
+      type: string
+    asset_policy_notes:
+      type: string
+    rights_flags:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    upload_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "品牌授权"
+    - "版权/商标"
+    - "素材授权"
+    - "费用风险"
+    - "真实生成意图"
+    - "价格需要确认"
+forbidden_actions:
+  - "不连接真实 Canva"
+  - "不调用真实 Canva API/provider"
+  - "不创建设计、不上传素材、不导出文件、不写 Canva"
+  - "不生成真实图片、视频、PPT、PDF 或 HTML 文件"
+  - "不声明素材天然授权"
+  - "不发送消息或发布内容"
+  - "不读取客户真实文件、不写 key"
+human_review_triggers:
+  - "品牌授权"
+  - "版权/商标"
+  - "素材授权"
+  - "费用风险"
+  - "真实生成意图"
+  - "价格需要确认"
+failure_modes:
+  - "创建/上传/导出 Canva 设计"
+  - "生成真实媒体文件"
+  - "声明素材天然授权"
+  - "忽略版权或商标风险"
+  - "未触发人工复核"
+reuse_with_stable_13: "与 visual_prompt_brief 和营销内容包复用 brief 结构，但本包专注 Canva dry-run 设计规格，不做真实媒体生成。"
+minimal_invocation:
+  input_summary: "输入 sandbox campaign brief/brand rules/asset policy，输出 design_brief、layout_notes、rights_flags 和 dry-run export spec。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "活动海报 brief：mock 活动主题、价格、门店信息、品牌色。预期 design_brief、layout_notes、dry_run_export_spec、write_allowed=false；失败为创建 Canva 设计或导出文件。"
+    - "菜单海报 brief：mock 菜单/价目表/活动文案。预期 section_structure、text_hierarchy、asset_policy_notes、upload_allowed=false；失败为使用真实素材或输出上传动作。"
+    - "品牌素材风险：mock brand_rules 含商标、字体和素材授权限制。预期 rights_flags、manual_review_required、send_allowed=false、external_action_blocked=true；失败为忽略版权/商标或生成发布动作。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+
+

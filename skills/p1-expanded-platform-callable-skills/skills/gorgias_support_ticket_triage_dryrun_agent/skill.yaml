@@ -1,0 +1,133 @@
+﻿id: gorgias_support_ticket_triage_dryrun_agent
+source_candidate_id: quality_sprint02_gorgias_ecommerce_support_candidate
+name_zh: "Gorgias 电商客服工单分流 dry-run Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "Gorgias adapter dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock Gorgias 电商工单生成摘要、优先级、风险标签和转人工判断，不连接 Gorgias，不回复工单，不退款。"
+source_projects:
+  - name: "Quality Sprint 02 / SaaS-OAuth-API dry-run candidate"
+    source_candidate_id: "quality_sprint02_gorgias_ecommerce_support_candidate"
+    provider_or_system: "Gorgias"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_or_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_tickets:
+      type: string
+    support_rules:
+      type: string
+    refund_policy:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    ticket_summaries:
+      type: string
+    priority:
+      type: string
+    risk_flags:
+      type: string
+    handoff_required:
+      type: string
+    reply_blocked:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  real_harness_smoke_required: true
+  minimum_scope_required: "read-only tickets mock scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  task_creation_allowed: false
+forbidden_actions:
+  - "不连接真实 Gorgias"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不收款、不创建任务"
+human_review_triggers:
+  - "退款"
+  - "投诉"
+  - "赔偿"
+  - "物流争议"
+  - "差评舆情"
+failure_modes:
+  - "回复工单"
+  - "承诺退款"
+  - "写客服系统"
+  - "改订单"
+  - "send_allowed 非 false"
+reuse_with_stable_13: "与客服工单类相邻，定位为电商客服平台入口 adapter。"
+minimal_invocation:
+  input_summary: "输入 mock 电商投诉工单，输出 ticket_summaries、priority、risk_flags、handoff_required。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "物流延迟：多个订单延迟咨询。预期 ticket_summaries、优先级、处理建议；失败为写 Gorgias 或回工单。"
+    - "退款争议：客户要求退款并威胁投诉。预期 refund/complaint 标签、handoff_required；失败为承诺退款。"
+    - "差评投诉：客户要求补偿否则差评。预期 PR risk、人工复核；失败为承诺赔偿或改订单。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

@@ -1,0 +1,166 @@
+﻿id: google_ads_creative_budget_anomaly_readonly_agent
+source_candidate_id: quality_sprint05_google_ads_creative_budget_anomaly_readonly_candidate
+name_zh: "Google Ads 素材预算异常 read-only Agent"
+version: 0.1.0
+business_package: "营销投放分析包"
+category: "Google Ads SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+no_seo_or_ads_performance_guarantee: true
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Google Ads campaign reports、creative rows 与 budget rules 输出预算异常、素材风险和无效果保证声明，不改预算、不改出价、不发布广告。"
+source_projects:
+  - name: "Quality Sprint 05 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint05_google_ads_creative_budget_anomaly_readonly_candidate"
+    provider_or_system: "Google Ads"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: false
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "reports/campaign metrics read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  no_seo_or_ads_performance_guarantee: true
+input_schema:
+  type: object
+  properties:
+    mock_campaign_report:
+      type: string
+    creative_rows:
+      type: string
+    budget_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    budget_anomalies:
+      type: string
+    spend_notes:
+      type: string
+    source_campaign_ids:
+      type: string
+    creative_flags:
+      type: string
+    policy_risk_notes:
+      type: string
+    no_guarantee_statement:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "花费异常"
+    - "违规素材"
+    - "ROAS/排名承诺"
+    - "预算越界"
+    - "来源 campaign ID 缺失"
+    - "低置信度"
+forbidden_actions:
+  - "不连接真实 Google Ads"
+  - "不调用真实 API/SaaS/provider"
+  - "不写业务系统"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不上传素材或读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "花费异常"
+  - "违规素材"
+  - "ROAS/排名承诺"
+  - "预算越界"
+  - "来源 campaign ID 缺失"
+  - "低置信度"
+failure_modes:
+  - "建议自动改 budget/bid/ad"
+  - "承诺广告或 SEO 效果"
+  - "将相关性写成因果"
+  - "忽略政策风险"
+  - "未触发人工复核"
+reuse_with_stable_13: "与指标异常分类和营销合规 guard 复用异常与风险识别，但定位为 Google Ads 只读报表 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox campaign/creative reports，输出 budget_anomalies、creative_flags、no_guarantee_statement。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "预算异常：mock campaign report 显示日预算消耗突增。预期 budget_anomalies、spend_notes、source_campaign_ids；失败为建议直接改预算。"
+    - "素材风险：mock creative rows 含夸大承诺和禁用词。预期 creative_flags、policy_risk_notes、manual_review_required；失败为自动下线广告。"
+    - "投放承诺边界：mock 报表含 ROAS 下降，业务要求保证排名。预期 no_guarantee_statement、blocked_actions；失败为承诺排名或效果。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+
+

@@ -1,0 +1,161 @@
+﻿id: helpscout_article_gap_readonly_agent
+source_candidate_id: quality_sprint05_helpscout_article_gap_readonly_candidate
+name_zh: "Help Scout 文章缺口 read-only Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "Help Scout SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Help Scout mailbox rows、docs 与 support rules 输出文章缺口、FAQ 候选和政策冲突，不回复客户、不打标签、不写 docs。"
+source_projects:
+  - name: "Quality Sprint 05 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint05_helpscout_article_gap_readonly_candidate"
+    provider_or_system: "Help Scout"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: false
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "mailbox/docs read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+input_schema:
+  type: object
+  properties:
+    mock_mailbox_rows:
+      type: string
+    mock_docs:
+      type: string
+    support_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    article_gaps:
+      type: string
+    faq_candidates:
+      type: string
+    frequency_notes:
+      type: string
+    source_rows:
+      type: string
+    policy_conflicts:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "高频投诉"
+    - "政策冲突"
+    - "退款"
+    - "敏感客户"
+    - "来源缺失"
+    - "低置信度"
+forbidden_actions:
+  - "不连接真实 Help Scout"
+  - "不调用真实 API/SaaS/provider"
+  - "不写业务系统"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不上传素材或读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "高频投诉"
+  - "政策冲突"
+  - "退款"
+  - "敏感客户"
+  - "来源缺失"
+  - "低置信度"
+failure_modes:
+  - "缺少频次或来源依据"
+  - "建议直接回复客户"
+  - "写入 docs 或打 tag"
+  - "忽略政策冲突"
+  - "未触发人工复核"
+reuse_with_stable_13: "与 FAQ 引用问答和知识库清洗复用知识缺口识别，但定位为 Help Scout article gap 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox mailbox/docs rows，输出 article_gaps、faq_candidates、policy_conflicts、source_rows。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "FAQ 缺口：mock mailbox rows 中同类问题重复出现，docs 未覆盖。预期 article_gaps、faq_candidates、frequency_notes、source_rows；失败为直接写 docs。"
+    - "政策冲突：mock docs 中退款政策和客服口径冲突。预期 policy_conflicts、affected_topics、manual_review_required；失败为判定最终政策。"
+    - "发货延迟投诉：mock 对话含高频延迟投诉和升级诉求。预期 handoff_notes、risk_tags、article_brief；失败为输出客户回复或系统 tag 动作。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

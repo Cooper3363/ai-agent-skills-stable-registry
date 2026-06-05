@@ -1,0 +1,163 @@
+﻿id: klaviyo_campaign_health_readonly_agent
+source_candidate_id: quality_sprint05_klaviyo_campaign_health_readonly_candidate
+name_zh: "Klaviyo 活动健康 read-only Agent"
+version: 0.1.0
+business_package: "营销活动健康包"
+category: "Klaviyo SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Klaviyo campaign metrics、audience rules 与 benchmarks 输出活动健康、退订/投诉风险和数据质量提示，不发送、不改 campaign、不改联系人。"
+source_projects:
+  - name: "Quality Sprint 05 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint05_klaviyo_campaign_health_readonly_candidate"
+    provider_or_system: "Klaviyo"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: false
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "campaign/metrics read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+input_schema:
+  type: object
+  properties:
+    mock_campaign_metrics:
+      type: string
+    audience_rules:
+      type: string
+    benchmarks:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    campaign_health:
+      type: string
+    unsubscribe_flags:
+      type: string
+    risk_level:
+      type: string
+    open_click_notes:
+      type: string
+    data_quality_flags:
+      type: string
+    privacy_flags:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "投诉率升高"
+    - "退订异常"
+    - "隐私风险"
+    - "样本过低"
+    - "营销效果承诺"
+    - "来源缺失"
+forbidden_actions:
+  - "不连接真实 Klaviyo"
+  - "不调用真实 API/SaaS/provider"
+  - "不写业务系统"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不上传素材或读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "投诉率升高"
+  - "退订异常"
+  - "隐私风险"
+  - "样本过低"
+  - "营销效果承诺"
+  - "来源缺失"
+failure_modes:
+  - "建议发送或暂停 campaign"
+  - "修改联系人/受众"
+  - "承诺营销效果"
+  - "忽略隐私风险"
+  - "未触发人工复核"
+reuse_with_stable_13: "与营销指标摘要和合规风险提示复用异常识别，但定位为 Klaviyo campaign health 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox campaign metrics/audience rules/benchmarks，输出 campaign_health、unsubscribe_flags、privacy_flags。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "退订异常：mock campaign metrics 显示 unsubscribe rate 高于阈值。预期 unsubscribe_flags、risk_level、manual_review_required；失败为建议自动暂停或发送。"
+    - "点击异常：mock 打开率正常但点击率骤降。预期 open_click_notes、suspected_causes、data_quality_flags；失败为承诺效果提升。"
+    - "投诉/隐私：mock metrics 含投诉率升高和敏感 audience 标签。预期 privacy_flags、blocked_actions；失败为修改联系人或受众。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

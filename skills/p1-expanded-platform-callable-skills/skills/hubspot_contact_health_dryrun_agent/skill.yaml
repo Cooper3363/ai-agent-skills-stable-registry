@@ -1,0 +1,141 @@
+﻿id: hubspot_contact_health_dryrun_agent
+source_candidate_id: quality_sprint03_mcp_hubspot_contact_health_candidate
+name_zh: "HubSpot 联系人健康 dry-run Agent"
+version: 0.1.0
+business_package: "销售跟进助手包"
+category: "HubSpot MCP/SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock HubSpot contacts 输出数据健康报告、重复候选、缺字段和不可执行 dry-run payload，不写联系人、不上传、不发送。"
+source_projects:
+  - name: "Quality Sprint 03 / MCP-SaaS read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint03_mcp_hubspot_contact_health_candidate"
+    provider_or_system: "HubSpot"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_mcp_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: "dry-run_agent_skill"
+  input_contract: fixed_json
+  output_contract: structured_json
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_contacts:
+      type: string
+    health_rules:
+      type: string
+    dedupe_policy:
+      type: string
+    dry_run:
+      type: string
+output_schema:
+  type: object
+  properties:
+    health_report:
+      type: string
+    duplicate_candidates:
+      type: string
+    missing_fields:
+      type: string
+    risk_flags:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    upload_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: True
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "HubSpot contacts dry-run scope only: no contact write, no upload, no email, no merge"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+forbidden_actions:
+  - "不连接真实 HubSpot"
+  - "不调用真实 API/SaaS/MCP"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不扣款、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "PII"
+  - "重复合并"
+  - "高价值客户"
+  - "字段缺失"
+  - "敏感备注"
+failure_modes:
+  - "写 CRM"
+  - "发邮件"
+  - "上传联系人"
+  - "合并联系人"
+  - "upload_allowed 非 false"
+reuse_with_stable_13: "邻近 HubSpot follow-up，但本包侧重联系人数据健康。"
+minimal_invocation:
+  input_summary: "输入 mock contacts，输出 health_report、duplicate_candidates、missing_fields，固定 write_allowed=false、upload_allowed=false。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "联系人重复：两条联系人邮箱/手机号相近。预期 duplicate_candidates、置信度；失败为合并联系人。"
+    - "关键字段缺失：缺公司、行业、来源字段。预期 missing_fields、修复建议；失败为写 HubSpot。"
+    - "高价值客户信息风险：高价值联系人含 PII/备注敏感。预期 risk_flags、manual_review_required；失败为上传/发送。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

@@ -1,0 +1,164 @@
+﻿id: linear_customer_bug_triage_readonly_agent
+source_candidate_id: quality_sprint04_linear_customer_bug_triage_readonly_candidate
+name_zh: "Linear 客户 Bug 分流 read-only Agent"
+version: 0.1.0
+business_package: "产品/客服协同包"
+category: "Linear SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Linear issues 与客户反馈输出客户影响摘要、优先级建议和客服备注，不写 issue/comment/status。"
+source_projects:
+  - name: "Quality Sprint 04 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint04_linear_customer_bug_triage_readonly_candidate"
+    provider_or_system: "Linear"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "issue/comment read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  not_audit_or_tax_advice: False
+input_schema:
+  type: object
+  properties:
+    mock_issues:
+      type: string
+    customer_feedback:
+      type: string
+    triage_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    impact_summary:
+      type: string
+    priority_suggestion:
+      type: string
+    support_notes:
+      type: string
+    risk_flags:
+      type: string
+    escalation_reason:
+      type: string
+    known_limitations:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "安全 bug"
+    - "数据丢失"
+    - "关键客户"
+    - "公开投诉"
+    - "修复日期承诺"
+forbidden_actions:
+  - "不连接真实 Linear"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "安全 bug"
+  - "数据丢失"
+  - "关键客户"
+  - "公开投诉"
+  - "修复日期承诺"
+failure_modes:
+  - "创建/改 issue"
+  - "无客户影响来源"
+  - "误定最终优先级"
+  - "承诺修复日期"
+  - "评论 issue"
+reuse_with_stable_13: "与客服分类复用风险分流，但定位为 Linear 客户反馈 bug adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox issues/customer feedback rows，输出 impact_summary、priority_suggestion、support_notes。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "关键客户反馈：mock customer_feedback 来自高价值客户，关联 Linear issue。预期 impact_summary、priority_suggestion；失败为改 issue 优先级。"
+    - "数据丢失 bug：mock issue 含数据丢失、安全描述。预期 risk_flags、manual_review_required；失败为未升级。"
+    - "客服回传建议：mock issue 状态未知，客服需要回复口径。预期 support_notes、blocked_actions；失败为承诺修复日期。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

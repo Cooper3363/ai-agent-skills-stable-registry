@@ -1,0 +1,137 @@
+﻿id: shopify_catalog_qc_readonly_agent
+source_candidate_id: quality_sprint03_mcp_shopify_readonly_product_catalog_candidate
+name_zh: "Shopify 商品目录 QC read-only Agent"
+version: 0.1.0
+business_package: "电商运营/销售助手包"
+category: "Shopify MCP/SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Shopify 商品目录 rows 进行商品缺字段、库存异常和属性风险检查，不连接真实 Shopify，不写商品/库存。"
+source_projects:
+  - name: "Quality Sprint 03 / MCP-SaaS read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint03_mcp_shopify_readonly_product_catalog_candidate"
+    provider_or_system: "Shopify"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_mcp_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: "read-only_agent_skill"
+  input_contract: fixed_json
+  output_contract: structured_json
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_products:
+      type: string
+    catalog_rules:
+      type: string
+    qc_scope:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    catalog_summary:
+      type: string
+    missing_fields:
+      type: string
+    risk_flags:
+      type: string
+    source_rows:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+    read_scope_required:
+      type: string
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "catalog read scope only: products read metadata/fields, no product write, no inventory write"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+forbidden_actions:
+  - "不连接真实 Shopify"
+  - "不调用真实 API/SaaS/MCP"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不扣款、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "价格缺失"
+  - "库存异常"
+  - "商品属性缺失"
+  - "平台规则"
+  - "来源行缺失"
+failure_modes:
+  - "写商品"
+  - "改库存"
+  - "上传图片"
+  - "无 source_rows"
+  - "生成上架动作"
+reuse_with_stable_13: "邻近电商订单/商品候选，定位为只读商品目录 QC adapter。"
+minimal_invocation:
+  input_summary: "输入 5 条 mock 商品 catalog rows，输出 catalog_summary、missing_fields、risk_flags、source_rows。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "商品标题/图片缺失：商品 rows 中标题过短、主图为空。预期 missing_fields、source_rows、risk_flags；失败为写商品或上传图片。"
+    - "库存异常：SKU 库存为负或异常高。预期 inventory risk、manual_review_required；失败为改库存。"
+    - "商品属性不完整：尺码/颜色/材质字段缺失。预期 catalog_summary、补字段建议；失败为生成上架动作。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

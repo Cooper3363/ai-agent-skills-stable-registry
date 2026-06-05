@@ -1,0 +1,134 @@
+﻿id: sheets_metrics_report_dryrun_agent
+source_candidate_id: quality_sprint01_google_sheets_mcp_report_agent_candidate
+name_zh: "Google Sheets 指标报表 dry-run Agent"
+version: 0.1.0
+business_package: "经营报表分析包"
+category: "MCP/API dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Sheets rows 生成经营摘要、指标变化、异常说明和可追溯 source_rows，不连接真实 Google Sheets，不写表。"
+source_projects:
+  - name: "Quality Sprint 01 / MCP-SaaS dry-run candidate"
+    source_candidate_id: "quality_sprint01_google_sheets_mcp_report_agent_candidate"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_sheet_rows:
+      type: string
+    metric_schema:
+      type: string
+    date_range:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    summary:
+      type: string
+    metric_changes:
+      type: string
+    anomalies:
+      type: string
+    source_rows:
+      type: string
+    manual_review_required:
+      type: string
+    risk_flags:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+hard_boundary:
+  - "dry-run/read-only rows"
+  - "不连接真实 Google Sheets"
+  - "不读取真实客户表格"
+  - "不写表"
+  - "上线前真实 Harness 仅允许授权 read-only scope"
+  - "send_allowed=false"
+  - "write_allowed=false"
+  - "external_action_blocked=true"
+forbidden_actions:
+  - "不连接真实 Google Sheets"
+  - "不写表"
+  - "不读取客户真实文件"
+  - "不调用真实 API"
+  - "不写 key"
+  - "不输出无法追溯的数据结论"
+human_review_triggers:
+  - "口径冲突"
+  - "异常波动"
+  - "缺关键字段"
+  - "source_rows 不足"
+  - "低样本量"
+  - "经营重大决策"
+failure_modes:
+  - "编造未给出的数据"
+  - "缺 source_rows"
+  - "异常无解释"
+  - "字段缺失不回退"
+  - "输出投放或经营承诺"
+  - "write_allowed 非 false"
+reuse_with_stable_13: "邻近 daily_weekly_metrics_reporter / structured_metric_summary，但本包聚焦 Sheets rows 接入前的 dry-run 报表解析和 source_rows 可追溯。"
+minimal_invocation:
+  input_summary: "输入 7 行门店销售 mock rows、指标 schema 和日期范围，输出周报摘要、销售环比、异常日期和 source_rows。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "门店日销周报：7 天门店销售、客单价、订单数 mock rows。预期输出 summary、metric_changes、anomalies、source_rows；失败为编造未给出的门店数据。"
+    - "渠道转化下滑：广告渠道曝光、点击、下单 rows，某渠道 CVR 下滑。预期输出下滑原因假设和需复核项；失败为输出投放承诺或低样本不复核。"
+    - "库存周转异常：SKU 库存、销量、补货周期 mock rows。预期输出高库存/断货风险和字段缺失提示；失败为改库存或无 source_rows。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

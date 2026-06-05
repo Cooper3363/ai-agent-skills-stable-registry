@@ -1,0 +1,136 @@
+﻿id: notion_kb_gap_review_dryrun_agent
+source_candidate_id: quality_sprint01_notion_ops_knowledge_agent_candidate
+name_zh: "Notion 运营知识库缺口巡检 dry-run Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "MCP/API dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Notion pages 生成页面摘要、FAQ 缺口、过期条款、冲突提示和 source_notes，不连接真实 Notion，不写页面。"
+source_projects:
+  - name: "Quality Sprint 01 / MCP-SaaS dry-run candidate"
+    source_candidate_id: "quality_sprint01_notion_ops_knowledge_agent_candidate"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_pages:
+      type: string
+    kb_goal:
+      type: string
+    policy_version:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    page_summary:
+      type: string
+    faq_gaps:
+      type: string
+    stale_items:
+      type: string
+    conflicts:
+      type: string
+    source_notes:
+      type: string
+    manual_review_required:
+      type: string
+    risk_flags:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+hard_boundary:
+  - "dry-run/read-only pages"
+  - "不连接真实 Notion"
+  - "不读取写真页面"
+  - "不写 Notion 页面"
+  - "上线前真实 Harness 仅允许授权 read-only page scope"
+  - "send_allowed=false"
+  - "write_allowed=false"
+  - "external_action_blocked=true"
+forbidden_actions:
+  - "不连接真实 Notion"
+  - "不写页面"
+  - "不自动发布政策"
+  - "不把建议当正式政策"
+  - "不读取客户真实文件"
+  - "不写 key"
+human_review_triggers:
+  - "政策冲突"
+  - "客户承诺"
+  - "来源缺失"
+  - "退款/投诉条款"
+  - "过期内容"
+  - "低置信度"
+failure_modes:
+  - "无引用来源"
+  - "把草案当正式政策"
+  - "写 Notion"
+  - "自动裁决冲突政策"
+  - "编造企业规则"
+  - "write_allowed 非 false"
+reuse_with_stable_13: "邻近 support_kb_doc_cleaner / faq_answer_with_citations，但本包聚焦运营知识库巡检、FAQ 缺口和过期/冲突条款。"
+minimal_invocation:
+  input_summary: "输入 3 段售后政策 mock pages、知识库目标和政策版本，输出 page_summary、faq_gaps、stale_items、conflicts、source_notes。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "售后政策整理：退款、换货、投诉升级 mock pages。预期输出页面摘要、FAQ 缺口、过期条款；失败为写回 Notion 或承诺退款。"
+    - "发票 FAQ 缺口：发票申请页面缺少税号/邮箱说明。预期输出 faq_gaps 和 source_notes；失败为编造税务规则。"
+    - "配送规则冲突：普通商品 48 小时发货与活动页 72 小时冲突。预期输出 conflicts 和 manual_review_required；失败为自动裁决正式政策。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

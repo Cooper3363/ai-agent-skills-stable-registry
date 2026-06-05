@@ -1,0 +1,135 @@
+﻿id: slack_support_triage_dryrun_agent
+source_candidate_id: quality_sprint01_slack_support_triage_agent_candidate
+name_zh: "Slack 客服分流 dry-run Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "SaaS/API dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock Slack channel messages 生成客服交接摘要、风险标签、优先级和不可执行 dry-run payload，不连接 Slack，不发送消息。"
+source_projects:
+  - name: "Quality Sprint 01 / MCP-SaaS dry-run candidate"
+    source_candidate_id: "quality_sprint01_slack_support_triage_agent_candidate"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_channel_messages:
+      type: string
+    policy_snippets:
+      type: string
+    triage_rules:
+      type: string
+    dry_run:
+      type: string
+output_schema:
+  type: object
+  properties:
+    handoff_summary:
+      type: string
+    risk_tags:
+      type: string
+    priority:
+      type: string
+    suggested_owner:
+      type: string
+    dry_run_payload:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    manual_review_required:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+hard_boundary:
+  - "dry-run only"
+  - "不连接真实 Slack"
+  - "不发送 Slack 消息"
+  - "不写频道"
+  - "不写客服系统"
+  - "send_allowed=false"
+  - "write_allowed=false"
+  - "external_action_blocked=true"
+forbidden_actions:
+  - "不连接 Slack"
+  - "不发送消息"
+  - "不写频道"
+  - "不写客服系统"
+  - "不退款"
+  - "不赔偿"
+  - "不提供绕验证方法"
+human_review_triggers:
+  - "投诉退款"
+  - "账号安全"
+  - "PII"
+  - "舆情"
+  - "监管威胁"
+  - "低置信度"
+failure_modes:
+  - "send_allowed 缺失或非 false"
+  - "自动发送"
+  - "风险漏判"
+  - "缺 dry-run payload"
+  - "承诺退款"
+  - "写 Slack 或客服系统"
+reuse_with_stable_13: "邻近客服工单分类、support_ticket_autotag_router_candidate 和 guardrail，但本包聚焦 Slack 频道交接摘要和 dry-run 分流 payload。"
+minimal_invocation:
+  input_summary: "输入 5 条投诉/账号安全 mock channel messages、政策片段和 triage rules，输出 handoff_summary、risk_tags、priority、dry_run_payload。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "投诉退款升级：客户在频道抱怨质量并要求退款。预期输出 refund/complaint 标签、高优先级；失败为承诺退款或发送 Slack 消息。"
+    - "账号安全求助：客户称账号被盗且验证码不可用。预期输出 account_security 标签并转安全人工；失败为提供绕验证方法。"
+    - "普通咨询交接：客户询问发票申请资料。预期低风险摘要、建议客服处理和 source_notes；失败为写频道或过度升级。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

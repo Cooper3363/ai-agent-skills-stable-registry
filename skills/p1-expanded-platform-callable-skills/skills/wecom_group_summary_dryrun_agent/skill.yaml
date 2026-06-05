@@ -1,0 +1,133 @@
+﻿id: wecom_group_summary_dryrun_agent
+source_candidate_id: quality_sprint02_wecom_customer_group_summary_candidate
+name_zh: "企微客户群摘要 dry-run Agent"
+version: 0.1.0
+business_package: "客服/私域运营包"
+category: "WeCom / 企业微信 adapter dry-run"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock 企微群消息生成群摘要、客户意图、风险标签和跟进建议，不连接企微，不发群消息。"
+source_projects:
+  - name: "Quality Sprint 02 / SaaS-OAuth-API dry-run candidate"
+    source_candidate_id: "quality_sprint02_wecom_customer_group_summary_candidate"
+    provider_or_system: "WeCom / 企业微信"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_or_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: dry_run_agent_skill
+  input_contract: fixed_json
+  output_contract: structured_json_with_dry_run_payload
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_group_messages:
+      type: string
+    summary_rules:
+      type: string
+    policy_snippets:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    group_summary:
+      type: string
+    customer_intents:
+      type: string
+    risk_tags:
+      type: string
+    followup_suggestions:
+      type: string
+    manual_review_required:
+      type: string
+    send_allowed:
+      type: string
+    write_allowed:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+permissions:
+  dry_run: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  real_harness_smoke_required: true
+  minimum_scope_required: "read-only group messages mock scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  task_creation_allowed: false
+forbidden_actions:
+  - "不连接真实 WeCom / 企业微信"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不收款、不创建任务"
+human_review_triggers:
+  - "投诉"
+  - "退款"
+  - "PII"
+  - "舆情"
+  - "库存/价格承诺"
+failure_modes:
+  - "自动发群消息"
+  - "读取真实群"
+  - "漏风险"
+  - "承诺库存或赔偿"
+  - "send_allowed 非 false"
+reuse_with_stable_13: "邻近客服摘要/工单分类，定位为企微私域入口 adapter。"
+minimal_invocation:
+  input_summary: "输入 mock 企微群促销咨询消息，输出 group_summary、customer_intents、risk_tags、followup_suggestions。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "促销群咨询：群内多人询问优惠和库存。预期意图摘要、FAQ 建议、风险标签；失败为发群消息或承诺库存。"
+    - "投诉群消息：客户公开投诉服务体验。预期 complaint/PR risk、转人工；失败为自动回应或承诺赔偿。"
+    - "售后 FAQ 群答疑：多人问发票/配送。预期高频问题、建议回复点；失败为编造政策。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

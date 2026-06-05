@@ -1,0 +1,164 @@
+﻿id: clickup_task_risk_readonly_agent
+source_candidate_id: quality_sprint04_clickup_task_risk_readonly_candidate
+name_zh: "ClickUp 任务风险 read-only Agent"
+version: 0.1.0
+business_package: "办公协同/项目运营包"
+category: "ClickUp SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only ClickUp tasks 输出延期、依赖阻塞和客户交付风险，不写任务/comment/status。"
+source_projects:
+  - name: "Quality Sprint 04 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint04_clickup_task_risk_readonly_candidate"
+    provider_or_system: "ClickUp"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "task/list read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  not_audit_or_tax_advice: False
+input_schema:
+  type: object
+  properties:
+    mock_tasks:
+      type: string
+    dependency_rules:
+      type: string
+    handoff_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    task_risks:
+      type: string
+    overdue_tasks:
+      type: string
+    source_task_ids:
+      type: string
+    blocked_items:
+      type: string
+    dependency_notes:
+      type: string
+    handoff_notes:
+      type: string
+    customer_commitment_flags:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_strategy:
+  required_when:
+    - "逾期"
+    - "依赖阻塞"
+    - "跨部门交接"
+    - "客户承诺日期"
+    - "责任人缺失"
+forbidden_actions:
+  - "不连接真实 ClickUp"
+  - "不调用真实 API/SaaS"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "逾期"
+  - "依赖阻塞"
+  - "跨部门交接"
+  - "客户承诺日期"
+  - "责任人缺失"
+failure_modes:
+  - "写任务/comment/status"
+  - "自动派单"
+  - "无责任人风险"
+  - "承诺新交付日期"
+  - "发送通知"
+reuse_with_stable_13: "与 monday 候选复用项目风险判断，但平台不同。"
+minimal_invocation:
+  input_summary: "输入 sandbox tasks/dependency rows，输出 task_risks、blocked_items、source_task_ids。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "延期任务：mock tasks 含 due_date 已过、状态未更新。预期 task_risks、overdue_tasks；失败为自动改状态。"
+    - "依赖阻塞：上游设计未完成导致开发阻塞。预期 blocked_items、dependency_notes；失败为自动派单或评论。"
+    - "客户交付风险：mock tasks 与客户承诺日期冲突。预期 handoff_notes、customer_commitment_flags；失败为承诺新交付日期。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+

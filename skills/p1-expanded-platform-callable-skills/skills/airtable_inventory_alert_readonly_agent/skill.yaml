@@ -1,0 +1,137 @@
+﻿id: airtable_inventory_alert_readonly_agent
+source_candidate_id: quality_sprint03_mcp_airtable_inventory_ops_candidate
+name_zh: "Airtable 库存预警 read-only Agent"
+version: 0.1.0
+business_package: "经营报表/库存运营包"
+category: "Airtable MCP/SaaS adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_baseline_count: 13
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-06
+stable_release_group: p1-expanded-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only Airtable 库存 rows 输出库存预警、补货核查、过期行和 source_rows，不写行、不改库存。"
+source_projects:
+  - name: "Quality Sprint 03 / MCP-SaaS read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint03_mcp_airtable_inventory_ops_candidate"
+    provider_or_system: "Airtable"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+  risk_notes: "候选库阶段和 L2 simulated 结论不替代正式法务意见。"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_mcp_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - "deepagents"
+  - "generic_agent_skill"
+  - "openclow"
+  - "openclaw"
+  - "hermes"
+  - "mcp"
+deepagents_compatibility:
+  callable_type: "read-only_agent_skill"
+  input_contract: fixed_json
+  output_contract: structured_json
+  external_provider_required: false
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  notes: "默认通过 OpenAI-compatible 中转站文本模型通道执行推理；模型、base_url、api_key、timeout、成本阈值由平台运行时注入；repo 不写 key。"
+input_schema:
+  type: object
+  properties:
+    mock_inventory_rows:
+      type: string
+    inventory_rules:
+      type: string
+    date_range:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    inventory_alerts:
+      type: string
+    reorder_checks:
+      type: string
+    stale_rows:
+      type: string
+    source_rows:
+      type: string
+    manual_review_required:
+      type: string
+    external_action_blocked:
+      type: string
+    real_harness_smoke_required:
+      type: string
+    read_scope_required:
+      type: string
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: False
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "Airtable table rows read scope only: no row write, no task creation, no inventory update"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  inventory_update_allowed: false
+  payment_capture_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+forbidden_actions:
+  - "不连接真实 Airtable"
+  - "不调用真实 API/SaaS/MCP"
+  - "不写业务系统"
+  - "不发送消息"
+  - "不读取客户真实文件"
+  - "不写 key"
+  - "不退款、不赔偿、不改库存、不扣款、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "缺货"
+  - "高库存"
+  - "更新时间过旧"
+  - "owner 缺失"
+  - "库存口径异常"
+failure_modes:
+  - "写表"
+  - "改库存"
+  - "创建任务"
+  - "自动降价/促销"
+  - "无 source_rows"
+reuse_with_stable_13: "邻近库存/经营报表候选，定位为 Airtable 库存 adapter。"
+minimal_invocation:
+  input_summary: "输入 mock 库存 rows，输出 inventory_alerts、reorder_checks、stale_rows、source_rows。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "缺货预警：SKU 可售库存低于阈值。预期 inventory_alerts、source_rows；失败为改库存或创建采购单。"
+    - "高库存：周转慢且库存高。预期高库存风险、reorder_checks；失败为自动降价/促销。"
+    - "责任人/更新时间缺失：owner 或 update_at 缺失。预期 stale_rows、manual_review_required；失败为写 Airtable 行。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则转入稳定库，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已完成；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "已进入 p1-expanded-platform-callable-skills 扩容批次。"
+
