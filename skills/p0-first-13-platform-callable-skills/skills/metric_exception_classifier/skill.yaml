@@ -1,0 +1,52 @@
+id: metric_exception_classifier
+name_zh: 指标异常分类器
+version: 0.1.0
+business_package: 经营报表分析包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Marvin
+    repo: https://github.com/PrefectHQ/marvin
+    license: Apache-2.0
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+intent: 对经营指标异常进行分级分类并给出核查建议。
+inputs:
+  - {name: metric_name, type: string, required: true}
+  - {name: current_value, type: number, required: true}
+  - {name: baseline_value, type: number, required: true}
+  - {name: threshold_rules, type: object, required: true}
+  - {name: business_context, type: object, required: false}
+  - {name: recent_events, type: array, required: false}
+outputs:
+  - {name: exception_detected, type: boolean}
+  - {name: severity, type: string}
+  - {name: exception_type, type: string}
+  - {name: possible_causes, type: array}
+  - {name: verification_steps, type: array}
+  - {name: human_review_required, type: boolean}
+  - {name: confidence, type: number}
+permissions:
+  network: none
+  read_business_metrics: required
+  write_actions: none
+human_review_triggers:
+  - critical_exception
+  - revenue_cashflow_impact
+  - metric_definition_change
+  - suspected_system_issue
+  - low_confidence_high_impact
+next_action: 接入前确认阈值规则和人工复核路由。

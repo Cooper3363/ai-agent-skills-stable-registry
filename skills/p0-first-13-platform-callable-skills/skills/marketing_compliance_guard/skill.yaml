@@ -1,0 +1,51 @@
+id: marketing_compliance_guard
+name_zh: 营销合规检查
+version: 0.1.0
+business_package: 营销内容生产包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Guardrails
+    repo: https://github.com/guardrails-ai/guardrails
+    license: Apache-2.0
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+intent: 检查营销文案禁词、夸大承诺和敏感行业合规风险。
+inputs:
+  - {name: copy_text, type: string, required: true}
+  - {name: industry, type: string, required: false}
+  - {name: channel, type: string, required: false}
+  - {name: compliance_rules, type: object, required: false}
+  - {name: target_audience, type: string, required: false}
+outputs:
+  - {name: passed, type: boolean}
+  - {name: risk_level, type: string}
+  - {name: risk_items, type: array}
+  - {name: suggested_rewrites, type: array}
+  - {name: human_review_required, type: boolean}
+  - {name: disclaimer, type: string}
+permissions:
+  network: none
+  read_marketing_copy: required
+  write_actions: none
+human_review_triggers:
+  - medical_claims
+  - financial_return_claims
+  - education_result_claims
+  - absolute_claims
+  - sensitive_audience
+  - misleading_price
+next_action: 接入前补行业规则词库。

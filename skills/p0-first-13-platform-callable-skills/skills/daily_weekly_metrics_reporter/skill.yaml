@@ -1,0 +1,54 @@
+id: daily_weekly_metrics_reporter
+name_zh: 日报周报生成器
+version: 0.1.0
+business_package: 经营报表分析包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Instructor
+    repo: https://github.com/567-labs/instructor
+    license: MIT
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+boundaries:
+  - not_audit_or_tax_advice
+  - not_high_stakes_business_decision
+  - require_metric_definitions_when_unclear
+intent: 根据经营指标生成日报、周报或月报。
+inputs:
+  - {name: report_type, type: string, required: true}
+  - {name: date_range, type: object, required: true}
+  - {name: metrics, type: array, required: true}
+  - {name: metric_definitions, type: object, required: false}
+  - {name: business_context, type: object, required: false}
+  - {name: comparison_baseline, type: object, required: false}
+outputs:
+  - {name: executive_summary, type: string}
+  - {name: key_metrics, type: array}
+  - {name: anomalies, type: array}
+  - {name: likely_factors, type: array}
+  - {name: recommended_actions, type: array}
+  - {name: data_quality_notes, type: array}
+permissions:
+  network: none
+  read_business_metrics: required
+  write_actions: none
+human_review_triggers:
+  - unclear_metric_definition
+  - severe_missing_data
+  - major_exception
+  - high_stakes_decision
+next_action: 接入前确认指标输入结构和异常阈值。

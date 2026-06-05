@@ -1,0 +1,61 @@
+id: support_pii_redactor
+name_zh: 中文客服 PII 脱敏
+version: 0.1.0
+business_package: 客服知识库助手包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Microsoft Presidio
+    repo: https://github.com/microsoft/presidio
+    license: MIT
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: low
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: local_rules_or_platform_controlled
+  api_key_required: false
+  external_service_required: false
+dependencies:
+  primary: Microsoft Presidio
+  mode: local_rule_enhanced
+  external_upload: forbidden
+intent: 对中文客服文本中的手机号、邮箱、身份证、地址、订单号、微信号、姓名等信息进行脱敏。
+inputs:
+  - {name: text, type: string, required: true}
+  - {name: entity_rules, type: object, required: false}
+  - {name: masking_policy, type: object, required: false}
+  - {name: language, type: string, required: false}
+outputs:
+  - {name: redacted_text, type: string}
+  - {name: entities, type: array}
+  - {name: risk_level, type: string}
+  - {name: manual_review_required, type: boolean}
+  - {name: notes, type: array}
+permissions:
+  network: none
+  read_customer_text: required
+  write_actions: none
+  external_upload: forbidden
+entity_boundaries:
+  - PHONE_CN
+  - EMAIL
+  - CN_ID
+  - ADDRESS_CN
+  - ORDER_ID
+  - WECHAT_ID
+  - NAME
+human_review_triggers:
+  - high_sensitive_pii
+  - account_recovery
+  - complaint_ticket
+  - low_confidence_entity
+  - redaction_conflict
+next_action: 送平台调用验收。

@@ -1,0 +1,51 @@
+id: marketing_copy_pack
+name_zh: 营销文案包
+version: 0.1.0
+business_package: 营销内容生产包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Marketing Skills
+    repo: https://github.com/coreyhaines31/marketingskills
+    license: MIT
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: low
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+intent: 为中小微企业生成标题、正文、CTA 和合规风险提示。
+inputs:
+  - {name: business_name, type: string, required: true}
+  - {name: product_or_service, type: string, required: true}
+  - {name: target_audience, type: string, required: true}
+  - {name: channel, type: string, required: true}
+  - {name: campaign_goal, type: string, required: true}
+  - {name: tone, type: string, required: false}
+  - {name: constraints, type: object, required: false}
+outputs:
+  - {name: headlines, type: array}
+  - {name: body_copy, type: array}
+  - {name: ctas, type: array}
+  - {name: compliance_notes, type: array}
+  - {name: revision_suggestions, type: array}
+permissions:
+  network: none
+  write_actions: none
+human_review_triggers:
+  - regulated_industry
+  - absolute_claims
+  - financial_return_claims
+  - medical_claims
+  - minors
+  - price_sensitive
+next_action: 平台接入前做 smoke test。

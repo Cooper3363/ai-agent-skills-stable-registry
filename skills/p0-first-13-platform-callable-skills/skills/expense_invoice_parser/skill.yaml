@@ -1,0 +1,69 @@
+id: expense_invoice_parser
+name_zh: 费用票据字段抽取
+version: 0.1.0
+business_package: 经营报表/财票分析包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: invoice2data
+    repo: https://github.com/invoice-x/invoice2data
+    license: MIT
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: local_text_rules_or_platform_controlled
+  api_key_required: false
+  external_service_required: false
+dependencies:
+  primary: invoice2data
+  allowed_mode: local_or_mock_ocr_text_only
+  forbidden:
+    - Google Cloud Vision
+    - cloud OCR
+    - external invoice upload
+boundaries:
+  - not_tax_advice_true_required
+  - not_reimbursement_approval
+  - not_audit_conclusion
+intent: 从本地/mock 费用票据文本中抽取结构化字段，不输出税务或审计结论。
+inputs:
+  - {name: invoice_text, type: string, required: true}
+  - {name: source_type, type: string, required: true}
+  - {name: locale, type: string, required: false}
+  - {name: extraction_templates, type: object, required: false}
+outputs:
+  - {name: invoice_type, type: string}
+  - {name: seller_name, type: string}
+  - {name: buyer_name, type: string}
+  - {name: invoice_number, type: string}
+  - {name: invoice_date, type: string}
+  - {name: total_amount, type: number}
+  - {name: tax_amount, type: number}
+  - {name: currency, type: string}
+  - {name: line_items, type: array}
+  - {name: confidence, type: number}
+  - {name: missing_fields, type: array}
+  - {name: manual_review_required, type: boolean}
+  - {name: not_tax_advice, type: boolean}
+permissions:
+  network: none
+  read_local_invoice_text: required
+  write_actions: none
+  cloud_ocr: forbidden
+  external_upload: forbidden
+human_review_triggers:
+  - amount_mismatch
+  - missing_tax_or_invoice_number
+  - uncertain_invoice_type
+  - low_confidence
+  - tax_or_reimbursement_judgement
+next_action: 送平台调用验收。

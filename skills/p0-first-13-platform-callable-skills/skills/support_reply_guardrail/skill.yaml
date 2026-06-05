@@ -1,0 +1,51 @@
+id: support_reply_guardrail
+name_zh: 客服回复安全检查
+version: 0.1.0
+business_package: 客服知识库助手包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Guardrails
+    repo: https://github.com/guardrails-ai/guardrails
+    license: Apache-2.0
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+intent: 检查客服回复中的退款承诺、投诉升级、账号安全和低置信度风险。
+inputs:
+  - {name: reply_text, type: string, required: true}
+  - {name: customer_message, type: string, required: true}
+  - {name: policy_context, type: string, required: false}
+  - {name: ticket_context, type: object, required: false}
+  - {name: risk_threshold, type: string, required: false}
+outputs:
+  - {name: passed, type: boolean}
+  - {name: risk_level, type: string}
+  - {name: violations, type: array}
+  - {name: suggested_revision, type: string}
+  - {name: human_review_required, type: boolean}
+  - {name: review_reason, type: string}
+permissions:
+  network: none
+  read_customer_message: required
+  read_policy_context: optional
+  write_actions: none
+human_review_triggers:
+  - refund_commitment
+  - complaint_escalation
+  - account_security
+  - privacy_sensitive
+  - low_confidence
+next_action: 接入前测试误报、漏报和保守改写。

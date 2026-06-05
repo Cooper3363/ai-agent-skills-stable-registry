@@ -1,0 +1,59 @@
+id: support_kb_doc_cleaner
+name_zh: 知识库文档清洗
+version: 0.1.0
+business_package: 客服知识库助手包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Unstructured
+    repo: https://github.com/Unstructured-IO/unstructured
+    license: Apache-2.0
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: medium
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: local_text_processing_or_platform_controlled
+  api_key_required: false
+  external_service_required: false
+dependencies:
+  primary: Unstructured
+  allowed_mode: local_or_mock_text_only
+  forbidden:
+    - Unstructured Platform/API
+    - cloud OCR
+    - external document upload
+intent: 对客服知识库构建前的本地/mock 文本文档进行清洗、分块和质量提示。
+inputs:
+  - {name: document_text, type: string, required: true}
+  - {name: source_type, type: string, required: true}
+  - {name: source_metadata, type: object, required: false}
+  - {name: cleaning_rules, type: object, required: false}
+  - {name: chunking_policy, type: object, required: false}
+outputs:
+  - {name: cleaned_chunks, type: array}
+  - {name: removed_noise, type: array}
+  - {name: detected_sections, type: array}
+  - {name: quality_warnings, type: array}
+  - {name: manual_review_required, type: boolean}
+permissions:
+  network: none
+  read_local_document_text: required
+  write_actions: none
+  cloud_ocr: forbidden
+  external_upload: forbidden
+human_review_triggers:
+  - unknown_source
+  - contract_or_privacy_content
+  - mixed_sections
+  - missing_citation_source
+  - low_cleaning_quality
+  - severe_ocr_noise
+next_action: 送平台调用验收。

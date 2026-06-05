@@ -1,0 +1,53 @@
+id: support_ticket_classifier
+name_zh: 售后工单分类器
+version: 0.1.0
+business_package: 客服知识库助手包
+status: platform_deliverable
+status_label: 可交付平台
+source_projects:
+  - name: Instructor
+    repo: https://github.com/567-labs/instructor
+    license: MIT
+license:
+  commercial_use_status: allowed_after_review
+  risk_level: low
+l2_status: simulated_l2_passed
+platform_acceptance: passed
+adapter_targets:
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+  - generic_agent
+runtime:
+  model_provider: platform_controlled
+  api_key_required: platform_model_key_if_llm_backed
+  external_service_required: false
+intent: 对售后工单进行分类、优先级判断和转人工建议。
+inputs:
+  - {name: ticket_text, type: string, required: true}
+  - {name: customer_context, type: object, required: false}
+  - {name: taxonomy, type: object, required: false}
+  - {name: priority_rules, type: object, required: false}
+outputs:
+  - {name: category, type: string}
+  - {name: subcategory, type: string}
+  - {name: priority, type: string}
+  - {name: risk_flags, type: array}
+  - {name: suggested_owner, type: string}
+  - {name: human_review_required, type: boolean}
+  - {name: confidence, type: number}
+permissions:
+  network: none
+  read_ticket: required
+  read_customer_context: optional
+  write_actions: none
+  external_upload: forbidden
+human_review_triggers:
+  - high_priority
+  - complaint
+  - account_security
+  - financial_dispute
+  - privacy_sensitive
+  - low_confidence
+next_action: 统一分类枚举和优先级规则后接入。
