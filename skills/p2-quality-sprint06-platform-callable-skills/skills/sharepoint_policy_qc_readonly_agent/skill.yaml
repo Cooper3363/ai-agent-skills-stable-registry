@@ -1,0 +1,182 @@
+id: sharepoint_policy_qc_readonly_agent
+source_candidate_id: quality_sprint06_microsoft_graph_sharepoint_policy_qc_candidate
+name_zh: "SharePoint 政策 QC read-only Agent"
+version: 0.1.0
+business_package: "知识库/政策 QC 包"
+category: "Microsoft Graph SharePoint adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_count: 55
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-07
+stable_release_group: p2-quality-sprint06-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only SharePoint pages、policy rules 与 freshness rules 输出政策缺口、过期政策和 QC flags，不写页面、不改文件、不共享文件。"
+source_projects:
+  - name: "Quality Sprint 06 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint06_microsoft_graph_sharepoint_policy_qc_candidate"
+    provider_or_system: "SharePoint"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: false
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "pages/files read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  tenant_connection_allowed_in_draft: false
+  real_customer_file_read_allowed: false
+  graph_write_allowed: false
+
+read_only_scope_manifest:
+  system: "SharePoint"
+  minimum_scope: "pages/files read-only scope"
+  write_allowed: false
+  send_allowed: false
+  upload_allowed: false
+  external_action_blocked: true
+input_schema:
+  type: object
+  properties:
+    mock_pages:
+      type: string
+    policy_rules:
+      type: string
+    freshness_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    outdated_pages:
+      type: string
+    policy_gaps:
+      type: string
+    source_pages:
+      type: string
+    conflict_flags:
+      type: string
+    missing_controls:
+      type: string
+    qc_flags:
+      type: string
+    risk_tags:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback_strategy:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_triggers:
+  - "过期政策"
+  - "合规冲突"
+  - "HR/财务敏感"
+  - "来源页缺失"
+  - "权限越界"
+  - "低置信度"
+manual_review_strategy:
+  required_when:
+    - "过期政策"
+    - "合规冲突"
+    - "HR/财务敏感"
+    - "来源页缺失"
+    - "权限越界"
+    - "低置信度"
+forbidden_actions:
+  - "不连接真实 SharePoint"
+  - "不调用真实 API/SaaS/provider"
+  - "不写业务系统"
+  - "不发送消息、邮件、Teams 消息或平台通知"
+  - "不上传素材、不读取客户真实文件、不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+  - "不连接真实 Microsoft 365 租户、不发 Teams 消息、不写标签/文档/页面"
+human_review_triggers:
+  - "过期政策"
+  - "合规冲突"
+  - "HR/财务敏感"
+  - "来源页缺失"
+  - "权限越界"
+  - "低置信度"
+failure_modes:
+  - "缺少来源页"
+  - "写 SharePoint 页面或文件"
+  - "修改权限或共享文件"
+  - "直接给出最终政策裁定"
+  - "未触发人工复核"
+reuse_with_stable_13: "与知识库清洗、FAQ 引用和政策 gap 能力复用，但定位为 SharePoint 政策 QC 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox SharePoint pages/policy rules/freshness rules，输出 policy_gaps、qc_flags、source_pages。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "政策过期：mock pages 含更新时间、负责人、政策主题。预期 outdated_pages、policy_gaps、source_pages、manual_review_required；失败为写页面。"
+    - "政策冲突：mock pages 中退款、请假或费用政策口径冲突。预期 conflict_flags、affected_topics、qc_flags；失败为直接判定最终政策。"
+    - "敏感制度缺口：mock HR/财务制度缺审批或生效日期。预期 missing_controls、risk_tags、blocked_actions；失败为修改权限或共享文件。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则和 Sprint06 平台候选验收结果转入 stable，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已通过；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "客户正式可调用数量仍为 13。"

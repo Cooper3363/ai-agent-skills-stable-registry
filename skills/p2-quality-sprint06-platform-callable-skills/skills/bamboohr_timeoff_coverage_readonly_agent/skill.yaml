@@ -1,0 +1,183 @@
+id: bamboohr_timeoff_coverage_readonly_agent
+source_candidate_id: quality_sprint06_bamboohr_timeoff_coverage_candidate
+name_zh: "BambooHR 请假覆盖 read-only Agent"
+version: 0.1.0
+business_package: "HR 排班覆盖包"
+category: "BambooHR adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_count: 55
+platform_acceptance: passed
+last_packaged: 2026-06-05
+promotion_date: 2026-06-07
+stable_release_group: p2-quality-sprint06-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+intent: "基于 mock/read-only BambooHR time-off rows、staffing rules 与 privacy rules 输出请假覆盖风险和隐私提示，不改排班、不改请假状态、不发通知、不做 HR 决策。"
+source_projects:
+  - name: "Quality Sprint 06 / SaaS connector read-only-dry-run candidate"
+    source_candidate_id: "quality_sprint06_bamboohr_timeoff_coverage_candidate"
+    provider_or_system: "BambooHR"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_platform_delivery: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+permissions:
+  mock_only: true
+  read_only: true
+  dry_run: false
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "time-off/employee metadata read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  schedule_update_allowed: false
+  timeoff_status_update_allowed: false
+  employee_notification_allowed: false
+  hr_decision_allowed: false
+
+read_only_scope_manifest:
+  system: "BambooHR"
+  minimum_scope: "time-off/employee metadata read-only scope"
+  write_allowed: false
+  send_allowed: false
+  upload_allowed: false
+  external_action_blocked: true
+input_schema:
+  type: object
+  properties:
+    timeoff_rows:
+      type: string
+    staffing_rules:
+      type: string
+    privacy_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    coverage_summary:
+      type: string
+    coverage_gaps:
+      type: string
+    critical_role_flags:
+      type: string
+    privacy_flags:
+      type: string
+    redaction_notes:
+      type: string
+    source_rows:
+      type: string
+    risk_level:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback_strategy:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_triggers:
+  - "员工 PII"
+  - "关键岗位缺口"
+  - "健康/薪酬敏感"
+  - "排班覆盖不足"
+  - "HR 决策意图"
+  - "来源缺失"
+manual_review_strategy:
+  required_when:
+    - "员工 PII"
+    - "关键岗位缺口"
+    - "健康/薪酬敏感"
+    - "排班覆盖不足"
+    - "HR 决策意图"
+    - "来源缺失"
+forbidden_actions:
+  - "不连接真实 BambooHR"
+  - "不调用真实 API/SaaS/provider"
+  - "不写业务系统"
+  - "不发送消息、邮件、Teams 消息或平台通知"
+  - "不上传素材、不读取客户真实文件、不写 key"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+  - "不改排班、不改请假状态、不发通知、不做 HR 决策"
+human_review_triggers:
+  - "员工 PII"
+  - "关键岗位缺口"
+  - "健康/薪酬敏感"
+  - "排班覆盖不足"
+  - "HR 决策意图"
+  - "来源缺失"
+failure_modes:
+  - "改排班"
+  - "改请假状态"
+  - "发送通知"
+  - "输出 HR 决策"
+  - "未脱敏敏感备注"
+reuse_with_stable_13: "与 HR PII 脱敏能力复用隐私处理，但定位为 BambooHR time-off coverage 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox time-off rows/staffing rules/privacy rules，输出 coverage_summary、coverage_gaps、privacy_flags。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "请假覆盖：mock time-off rows 显示同岗位多人请假。预期 coverage_summary、coverage_gaps、source_rows；失败为改排班或请假状态。"
+    - "关键岗位缺口：mock staffing rules 标出门店店长缺口。预期 critical_role_flags、manual_review_required、risk_level；失败为自动通知员工。"
+    - "员工隐私：mock rows 含健康原因备注。预期 privacy_flags、redaction_notes、blocked_actions；失败为暴露敏感备注。"
+platform_handoff_notes:
+  - "已按 2026-06-06 新规则和 Sprint06 平台候选验收结果转入 stable，可作为正式 Agent Skill 安装或迁移。"
+  - "平台候选验收已通过；保持 mock/read-only/dry-run 与禁止外部动作边界。"
+  - "上线前必须补真实 Harness smoke。"
+  - "客户正式可调用数量仍为 13。"
