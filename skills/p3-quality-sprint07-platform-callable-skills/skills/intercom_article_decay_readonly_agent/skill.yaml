@@ -1,0 +1,191 @@
+﻿id: intercom_article_decay_readonly_agent
+source_candidate_id: quality_sprint07_intercom_article_decay_readonly_candidate
+name_zh: "Intercom Article Decay read-only Agent"
+version: 0.1.0
+business_package: "客服知识库助手包"
+category: "Intercom adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_count: 63
+platform_acceptance: accepted
+last_packaged: 2026-06-07
+intent: "基于 mock/read-only Intercom articles、conversations 与 decay rules 输出文章衰减、过期内容和知识缺口，不写文章、不发消息、不改 conversation。"
+source_projects:
+  - name: "Quality Sprint 07 / SaaS connector read-only candidate"
+    source_candidate_id: "quality_sprint07_intercom_article_decay_readonly_candidate"
+    provider_or_system: "Intercom"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_production_api_use: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  runtime_injected_fields:
+    - model
+    - base_url
+    - api_key
+    - timeout
+    - cost_limit
+permissions:
+  mock_only: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "articles/conversations read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  key_read_or_write_allowed: false
+  customer_file_read_allowed: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+
+read_only_scope_manifest:
+  system: "Intercom"
+  minimum_scope: "articles/conversations read-only scope"
+  write_allowed: false
+  send_allowed: false
+  upload_allowed: false
+  external_action_blocked: true
+input_schema:
+  type: object
+  properties:
+    mock_articles:
+      type: string
+    mock_conversations:
+      type: string
+    decay_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    decay_report:
+      type: string
+    outdated_articles:
+      type: string
+    article_gaps:
+      type: string
+    frequency_notes:
+      type: string
+    policy_conflicts:
+      type: string
+    source_rows:
+      type: string
+    risk_tags:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback_strategy:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_triggers:
+  - "高频投诉"
+  - "政策冲突"
+  - "账号安全"
+  - "来源缺失"
+  - "低置信度"
+  - "写入或发送意图"
+manual_review_strategy:
+  required_when:
+    - "高频投诉"
+    - "政策冲突"
+    - "账号安全"
+    - "来源缺失"
+    - "低置信度"
+    - "写入或发送意图"
+forbidden_actions:
+  - "不连接真实 Intercom"
+  - "不调用真实 API/provider"
+  - "不读取/打印/写入 key"
+  - "不读取客户真实文件"
+  - "不上传素材或文件"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不写业务系统"
+  - "不生成真实媒体/HTML/PDF/PPT 或其他文件"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "高频投诉"
+  - "政策冲突"
+  - "账号安全"
+  - "来源缺失"
+  - "低置信度"
+  - "写入或发送意图"
+failure_modes:
+  - "缺少 source_rows"
+  - "写 Intercom article"
+  - "发送消息或改 conversation"
+  - "判定最终政策"
+  - "未触发人工复核"
+reuse_with_stable_63: "与客服知识库、FAQ 引用和文章 gap 能力复用，但定位为 Intercom article decay 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox articles/conversations/decay rules，输出 decay_report、article_gaps、source_rows。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "文章过期：mock articles 含更新时间、浏览量、关联对话。预期 decay_report、outdated_articles、source_rows；失败为建议直接写文章。"
+    - "高频缺口：mock conversations 反复出现未覆盖问题。预期 article_gaps、frequency_notes、manual_review_required；失败为缺少频次证据。"
+    - "政策冲突：mock article 与客服回复口径不一致。预期 policy_conflicts、risk_tags、blocked_actions；失败为判定最终政策或发消息。"
+platform_handoff_notes:
+  - "候选库 draft_l3，可送平台候选调用验收窗口复验。"
+  - "复验通过前不得标为平台可交付、stable promotion 通过或客户正式可调用。"
+  - "上线前必须补真实 Harness smoke。"
+  - "本轮不修改 stable 仓库；stable 当前正式 Skill 数为 63。"
+
+promotion_date: 2026-06-07
+stable_release_group: p3-quality-sprint07-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+stable_total_after_promotion: 71
+source_acceptance_result: PLATFORM_ACCEPTANCE_QUALITY_SPRINT_07_RESULT.md

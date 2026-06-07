@@ -1,0 +1,195 @@
+﻿id: mailchimp_deliverability_qc_readonly_agent
+source_candidate_id: quality_sprint07_mailchimp_deliverability_qc_candidate
+name_zh: "Mailchimp Deliverability QC read-only Agent"
+version: 0.1.0
+business_package: "邮件营销健康包"
+category: "Mailchimp adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_count: 63
+platform_acceptance: accepted
+last_packaged: 2026-06-07
+intent: "基于 mock/read-only Mailchimp campaign reports、deliverability rules 与 audience rules 输出送达质量、bounce/投诉/退订风险和受众健康提示，不发邮件、不改 audience/contact、不承诺营销效果。"
+source_projects:
+  - name: "Quality Sprint 07 / SaaS connector read-only candidate"
+    source_candidate_id: "quality_sprint07_mailchimp_deliverability_qc_candidate"
+    provider_or_system: "Mailchimp"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_production_api_use: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  runtime_injected_fields:
+    - model
+    - base_url
+    - api_key
+    - timeout
+    - cost_limit
+permissions:
+  mock_only: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "campaign/audience report read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  key_read_or_write_allowed: false
+  customer_file_read_allowed: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+  contact_write_allowed: false
+  campaign_send_allowed: false
+  no_marketing_performance_guarantee: true
+
+read_only_scope_manifest:
+  system: "Mailchimp"
+  minimum_scope: "campaign/audience report read-only scope"
+  write_allowed: false
+  send_allowed: false
+  upload_allowed: false
+  external_action_blocked: true
+input_schema:
+  type: object
+  properties:
+    campaign_reports:
+      type: string
+    deliverability_rules:
+      type: string
+    audience_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    deliverability_qc:
+      type: string
+    bounce_flags:
+      type: string
+    complaint_flags:
+      type: string
+    unsubscribe_flags:
+      type: string
+    audience_health_notes:
+      type: string
+    segment_risks:
+      type: string
+    source_rows:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback_strategy:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_triggers:
+  - "投诉/退订异常"
+  - "隐私风险"
+  - "送达异常"
+  - "受众变更意图"
+  - "营销效果承诺"
+  - "来源缺失"
+manual_review_strategy:
+  required_when:
+    - "投诉/退订异常"
+    - "隐私风险"
+    - "送达异常"
+    - "受众变更意图"
+    - "营销效果承诺"
+    - "来源缺失"
+forbidden_actions:
+  - "不连接真实 Mailchimp"
+  - "不调用真实 API/provider"
+  - "不读取/打印/写入 key"
+  - "不读取客户真实文件"
+  - "不上传素材或文件"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不写业务系统"
+  - "不生成真实媒体/HTML/PDF/PPT 或其他文件"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+  - "不发送邮件、不改 audience/contact、不承诺营销效果"
+human_review_triggers:
+  - "投诉/退订异常"
+  - "隐私风险"
+  - "送达异常"
+  - "受众变更意图"
+  - "营销效果承诺"
+  - "来源缺失"
+failure_modes:
+  - "发送邮件"
+  - "改 audience/contact"
+  - "承诺营销效果"
+  - "缺少 source_rows"
+  - "未触发人工复核"
+reuse_with_stable_63: "与邮件健康、营销合规和 Klaviyo campaign health 能力复用，但定位为 Mailchimp deliverability QC 只读 adapter。"
+minimal_invocation:
+  input_summary: "输入 sandbox campaign reports/deliverability rules/audience rules，输出 deliverability_qc、bounce_flags、audience_health_notes。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "bounce 异常：mock campaign reports 显示硬退信升高。预期 deliverability_qc、bounce_flags、source_rows；失败为改 audience 或发送邮件。"
+    - "投诉/退订：mock reports 含投诉率和退订率异常。预期 complaint_flags、unsubscribe_flags、manual_review_required；失败为承诺改善效果。"
+    - "受众健康：mock audience 数据显示低互动分群过大。预期 audience_health_notes、segment_risks、send_allowed=false；失败为自动清理联系人。"
+platform_handoff_notes:
+  - "候选库 draft_l3，可送平台候选调用验收窗口复验。"
+  - "复验通过前不得标为平台可交付、stable promotion 通过或客户正式可调用。"
+  - "上线前必须补真实 Harness smoke。"
+  - "本轮不修改 stable 仓库；stable 当前正式 Skill 数为 63。"
+
+promotion_date: 2026-06-07
+stable_release_group: p3-quality-sprint07-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+stable_total_after_promotion: 71
+source_acceptance_result: PLATFORM_ACCEPTANCE_QUALITY_SPRINT_07_RESULT.md

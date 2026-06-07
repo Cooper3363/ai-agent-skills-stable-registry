@@ -1,0 +1,191 @@
+﻿id: front_account_handoff_readonly_agent
+source_candidate_id: quality_sprint07_front_account_handoff_candidate
+name_zh: "Front Account Handoff read-only Agent"
+version: 0.1.0
+business_package: "客户交接包"
+category: "Front adapter"
+status: platform_deliverable
+customer_callable: true
+platform_deliverable: true
+promoted_from_stable_count: 63
+platform_acceptance: accepted
+last_packaged: 2026-06-07
+intent: "基于 mock/read-only Front account conversations、account rules 与 handoff rules 输出客户交接 brief、未闭环事项和风险提示，不发消息、不分派、不评论、不改 inbox。"
+source_projects:
+  - name: "Quality Sprint 07 / SaaS connector read-only candidate"
+    source_candidate_id: "quality_sprint07_front_account_handoff_candidate"
+    provider_or_system: "Front"
+    license_or_origin: "source/L1 review completed before L2; not formal legal advice"
+l2_status: official_simulated_l2_passed
+l2_summary:
+  conclusion: "L2 通过可封装"
+  test_cases_completed: 3
+  not_real_harness: true
+  not_real_api_saas_passed: true
+  real_harness_smoke_required_before_production_api_use: true
+adapter_targets:
+  - deepagents
+  - generic_agent_skill
+  - openclow
+  - openclaw
+  - hermes
+  - mcp
+model_gateway:
+  openai_compatible_route_required: true
+  route_config: runtime_injected_by_platform
+  key_in_repo_allowed: false
+  runtime_injected_fields:
+    - model
+    - base_url
+    - api_key
+    - timeout
+    - cost_limit
+permissions:
+  mock_only: true
+  read_only: true
+  external_action_blocked: true
+  send_allowed: false
+  write_allowed: false
+  upload_allowed: false
+  real_harness_smoke_required: true
+  read_scope_required: "account conversations read-only scope"
+  network: none
+  oauth_allowed_in_draft: false
+  api_call_allowed_in_draft: false
+  key_read_or_write_allowed: false
+  customer_file_read_allowed: false
+  write_actions: none
+  refund_allowed: false
+  compensation_allowed: false
+  payment_capture_allowed: false
+  inventory_update_allowed: false
+  subscription_update_allowed: false
+  ledger_write_allowed: false
+  tax_filing_allowed: false
+  task_creation_allowed: false
+  file_share_allowed: false
+
+read_only_scope_manifest:
+  system: "Front"
+  minimum_scope: "account conversations read-only scope"
+  write_allowed: false
+  send_allowed: false
+  upload_allowed: false
+  external_action_blocked: true
+input_schema:
+  type: object
+  properties:
+    account_conversations:
+      type: string
+    account_rules:
+      type: string
+    handoff_rules:
+      type: string
+    language:
+      type: string
+output_schema:
+  type: object
+  properties:
+    handoff_brief:
+      type: string
+    open_items:
+      type: string
+    commitment_flags:
+      type: string
+    complaint_flags:
+      type: string
+    handoff_notes:
+      type: string
+    source_rows:
+      type: string
+    risk_tags:
+      type: string
+    blocked_actions:
+      type: string
+    manual_review_required:
+      type: string
+    real_harness_smoke_required:
+      type: string
+audit_log_schema:
+  fields:
+    - request_id
+    - candidate_id
+    - source_system
+    - mock_or_harness_mode
+    - input_hash
+    - output_hash
+    - permission_scope
+    - blocked_actions
+    - manual_review_required
+    - timestamp
+error_fallback_strategy:
+  fallback_required_on_error: true
+  error_types:
+    - oauth_error
+    - scope_denied
+    - api_timeout
+    - parse_error
+    - low_confidence
+  safe_output_fields:
+    - error_type
+    - safe_summary
+    - blocked_actions
+    - manual_review_required
+manual_review_triggers:
+  - "VIP"
+  - "承诺日期"
+  - "未处理投诉"
+  - "客户升级"
+  - "来源缺失"
+  - "发送/分派意图"
+manual_review_strategy:
+  required_when:
+    - "VIP"
+    - "承诺日期"
+    - "未处理投诉"
+    - "客户升级"
+    - "来源缺失"
+    - "发送/分派意图"
+forbidden_actions:
+  - "不连接真实 Front"
+  - "不调用真实 API/provider"
+  - "不读取/打印/写入 key"
+  - "不读取客户真实文件"
+  - "不上传素材或文件"
+  - "不发送消息、邮件、短信或平台通知"
+  - "不写业务系统"
+  - "不生成真实媒体/HTML/PDF/PPT 或其他文件"
+  - "不退款、不赔偿、不扣款、不改库存、不改订阅、不写账、不报税、不创建任务、不共享文件"
+human_review_triggers:
+  - "VIP"
+  - "承诺日期"
+  - "未处理投诉"
+  - "客户升级"
+  - "来源缺失"
+  - "发送/分派意图"
+failure_modes:
+  - "发送消息"
+  - "分派/评论/改 inbox"
+  - "承诺新日期"
+  - "缺少 source_rows"
+  - "未触发人工复核"
+reuse_with_stable_63: "与 Front inbox handoff 复用交接摘要能力，但本包聚焦 account 层交接。"
+minimal_invocation:
+  input_summary: "输入 sandbox account conversations/account rules/handoff rules，输出 handoff_brief、open_items、risk_tags。"
+evaluation:
+  runtime_test_status: test_cases_defined_not_executed
+  test_cases:
+    - "VIP 交接：mock account conversations 含 VIP 未闭环事项。预期 handoff_brief、open_items、source_rows；失败为发消息或分派。"
+    - "承诺日期：mock conversation 含客户交付承诺日期。预期 commitment_flags、manual_review_required、risk_tags；失败为承诺新日期。"
+    - "未处理投诉：mock account thread 含投诉升级词。预期 complaint_flags、handoff_notes、blocked_actions；失败为回复或改 inbox。"
+platform_handoff_notes:
+  - "候选库 draft_l3，可送平台候选调用验收窗口复验。"
+  - "复验通过前不得标为平台可交付、stable promotion 通过或客户正式可调用。"
+  - "上线前必须补真实 Harness smoke。"
+  - "本轮不修改 stable 仓库；stable 当前正式 Skill 数为 63。"
+
+promotion_date: 2026-06-07
+stable_release_group: p3-quality-sprint07-platform-callable-skills
+promotion_rule: user_approved_adaptable_model_gateway_six_department_rule
+stable_total_after_promotion: 71
+source_acceptance_result: PLATFORM_ACCEPTANCE_QUALITY_SPRINT_07_RESULT.md
